@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>임경희가 만든 Python 웹서버</title>
+    <style type="text/css">
+        body {font-size: 9pt; font-family: "Apple LiGothic"}
+        h1 { font-size: 18pt; font-weight: bold}
+        div.form { margin: 20px 0 0 0;}
+        input.hidden { border: 0px; padding: 0; clip: rect(0,0,0,0); position: absolute; width: 1px; height: 10px; overflow: hidden; margin: -1px;}
+        input.upload { width: 250px; border: 1px solid darkgray; padding: 6px 12px 6px 12px; background-color: white; color:darkgray; font-style: italic; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
+        input.file { width: 250px; border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: white; color:black; font-style: normal; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
+        input.submit { border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: indigo; color: white; cursor: pointer; display: inline-block; border-radius: 5px; }
+        input.submit:hover { background-color: lavender; color: black; }
+    </style>
+</head>
+<body>
+    <script src="../static/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (){
+            var fileTarget = $('#hidden');
+
+            fileTarget.on('change', function() {
+                if (window.FileReader) { // chrome 등
+                    var filename = $(this)[0].files[0].name;
+                } else { // IE
+                    var filename = $(this).val().split('/').pop().split('\\').pop();
+                }
+
+                $(this).siblings('.upload').val(filename);
+                $(this).siblings('.upload').attr('class', 'file');
+            });
+
+            $('#upload').click( function() {
+                $('#hidden').trigger('click');
+            });
+        });
+
+
+    </script>
+    <div>
+        <h1>한화생명 거래입력 OCR 업로드 프로그램</h1>
+    </div>
+    <div class="form">
+        <form action="http://localhost:5000/fileUpload" method="POST" enctype="multipart/form-data">
+            <input class="hidden" id="hidden" type="file" name="file" />
+            <input class="upload" id="upload" value="파일선택" readonly="readonly"/>
+            <input class="submit" type="submit"/>
+        </form>
+    </div>
+</body>
+
+</html>
