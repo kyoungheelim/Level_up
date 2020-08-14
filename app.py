@@ -78,5 +78,10 @@ def upload_file():
         # return 'upload 디렉토리 -> 파일 업로드 성공!'
 
 
+@app.route('/result', methods=['POST'])
+def result():
+    return open('words.json', 'r', encoding="utf-8").read()
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

@@ -19,7 +19,8 @@
         input.upload { width: 250px; border: 1px solid darkgray; padding: 6px 12px 6px 12px; background-color: white; color:darkgray; font-style: italic; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
         input.file { width: 250px; border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: white; color:black; font-style: normal; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
         input.submit { border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: #8977AD; color: white; cursor: pointer; display: inline-block; border-radius: 5px; }
-        input.submit:hover { background-color: #B19CD9; color: white; }
+        input.submit:hover { background-color: #B19CD9; }
+        input.submit:disabled { background-color: #888888; }
     </style>
 </head>
 <body>
@@ -56,6 +57,7 @@
                         $("#hidden").val('');
                         $("#upload").val('파일선택');
                         $("#upload").attr('class', 'upload');
+                        changeResultButton();
                     },
                     error: function() {
                         alert("파일 업로드 실패 ㅠㅠ");
@@ -67,8 +69,28 @@
 
                 return false;
             });
+
+            $('#result').click( function() {
+                $.ajax({
+                    url: '/result',
+                    type: 'POST',
+                    async: false,
+                    success: function (rtn) {
+                        $("resultBox").append(rtn);
+                    },
+                    error: function() {
+                        alert("결과 조회 실패 ㅠㅠ");
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            });
         });
 
+        function changeResultButton() {
+            $("#result").attr('disabled', false);
+        }
     </script>
     <div class="head">
         <h1>한화생명 거래입력 OCR 업로드 프로그램</h1>
@@ -80,7 +102,11 @@
             <input class="hidden" id="hidden" type="file" name="file" />
             <input class="upload" id="upload" value="파일선택" readonly="readonly"/>
             <input class="submit" type="submit"/>
+            <input class="submit" id="result" type="button" value="결과" disabled="disabled"/>
         </form>
+    </div>
+    <div class="result">
+        <div id="resultBox"></div>
     </div>
 </body>
 
