@@ -15,11 +15,12 @@ app = Flask(__name__)
 # OCR부분
 
 
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def render_file():
     return render_template('upload.html')
 
-@app.route('/fileUpload', methods = ['GET', 'POST'])
+
+@app.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
@@ -73,7 +74,7 @@ def upload_file():
         with open('words.json', 'w', encoding="utf-8") as make_file:
             json.dump(file_data, make_file, ensure_ascii=False, indent="\t")
 
-        return 'upload 디렉토리 -> 파일 업로드 성공!'
+        return '파일 업로드 성공!!!'
         # return 'upload 디렉토리 -> 파일 업로드 성공!'
 
 

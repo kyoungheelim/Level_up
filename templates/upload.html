@@ -2,16 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <title>임경희가 만든 Python 웹서버</title>
     <style type="text/css">
-        body {font-size: 9pt; font-family: "Apple LiGothic"}
-        h1 { font-size: 18pt; font-weight: bold}
-        div.form { margin: 20px 0 0 0;}
+        body { margin: 0; font-size: 9pt; font-family: "Apple LiGothic"; background-image: url("../static/image/background.png"); background-repeat: no-repeat; background-size: cover}
+        h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px gray;
+            text-align: center;
+            }
+        h6 { margin: 4px 20px 0 0; font-size: 8pt; font-weight: lighter; text-align: right; color: dimgray; }
+        div.head { padding: 40px 0 15px 0px; color: white; }
+        div.form { margin: 45px 0 0 30px; display: flex; justify-content: center; }
         input.hidden { border: 0px; padding: 0; clip: rect(0,0,0,0); position: absolute; width: 1px; height: 10px; overflow: hidden; margin: -1px;}
         input.upload { width: 250px; border: 1px solid darkgray; padding: 6px 12px 6px 12px; background-color: white; color:darkgray; font-style: italic; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
         input.file { width: 250px; border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: white; color:black; font-style: normal; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
-        input.submit { border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: indigo; color: white; cursor: pointer; display: inline-block; border-radius: 5px; }
-        input.submit:hover { background-color: lavender; color: black; }
+        input.submit { border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: #8977AD; color: white; cursor: pointer; display: inline-block; border-radius: 5px; }
+        input.submit:hover { background-color: #B19CD9; color: white; }
     </style>
 </head>
 <body>
@@ -34,15 +42,41 @@
             $('#upload').click( function() {
                 $('#hidden').trigger('click');
             });
+
+            $('#files').submit(function(){
+                var formData = new FormData($(this)[0]);
+
+                $.ajax({
+                    url: '/fileUpload',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function (rtn) {
+                        alert(rtn);
+                        $("#hidden").val('');
+                        $("#upload").val('파일선택');
+                        $("#upload").attr('class', 'upload');
+                    },
+                    error: function() {
+                        alert("파일 업로드 실패 ㅠㅠ");
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+
+                return false;
+            });
         });
 
-
     </script>
-    <div>
+    <div class="head">
         <h1>한화생명 거래입력 OCR 업로드 프로그램</h1>
+        <h6>Writed by limsera</h6>
     </div>
     <div class="form">
-        <form action="http://49.50.164.42:5000/fileUpload" method="POST" enctype="multipart/form-data">
+        <!--<form action="http://49.50.164.42:5000/fileUpload" method="POST" enctype="multipart/form-data">-->
+        <form id="files" method="POST" enctype="multipart/form-data">
             <input class="hidden" id="hidden" type="file" name="file" />
             <input class="upload" id="upload" value="파일선택" readonly="readonly"/>
             <input class="submit" type="submit"/>
