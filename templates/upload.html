@@ -13,8 +13,10 @@
             text-align: center;
             }
         h6 { margin: 4px 20px 0 0; font-size: 8pt; font-weight: lighter; text-align: right; color: dimgray; }
-        div.head { padding: 40px 0 15px 0px; color: white; }
-        div.form { margin: 45px 0 0 30px; display: flex; justify-content: center; }
+        div.head { padding: 40px 0 0 0; color: white; }
+        div.form { margin: 45px 0 0 0px; display: flex; justify-content: center; }
+        div.result { margin-top: 40px; display: flex; justify-content: center; }
+        div#resultBox { padding: 20px 20px 20px 20px; width: 360px; background-color: white; opacity: 0; }
         input.hidden { border: 0px; padding: 0; clip: rect(0,0,0,0); position: absolute; width: 1px; height: 10px; overflow: hidden; margin: -1px;}
         input.upload { width: 250px; border: 1px solid darkgray; padding: 6px 12px 6px 12px; background-color: white; color:darkgray; font-style: italic; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
         input.file { width: 250px; border: 1px solid darkgray; padding: 5px 12px 5px 12px; background-color: white; color:black; font-style: normal; margin: 0 10px 0 0; cursor: pointer; display: inline-block; border-radius: 5px; }
@@ -25,6 +27,7 @@
 </head>
 <body>
     <script src="../static/js/jquery-3.5.1.min.js"></script>
+    <script src="../static/js/jquery.blockUI.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function (){
             var fileTarget = $('#hidden');
@@ -47,12 +50,14 @@
             $('#files').submit(function(){
                 var formData = new FormData($(this)[0]);
 
+                $.blockUI();
                 $.ajax({
                     url: '/fileUpload',
                     type: 'POST',
                     data: formData,
                     async: false,
                     success: function (rtn) {
+                        $.unblockUI()
                         alert(rtn);
                         $("#hidden").val('');
                         $("#upload").val('파일선택');
@@ -60,6 +65,7 @@
                         changeResultButton();
                     },
                     error: function() {
+                        $.unblockUI()
                         alert("파일 업로드 실패 ㅠㅠ");
                     },
                     cache: false,
@@ -71,14 +77,18 @@
             });
 
             $('#result').click( function() {
+                $.blockUI()
                 $.ajax({
                     url: '/result',
                     type: 'POST',
                     async: false,
                     success: function (rtn) {
-                        $("resultBox").append(rtn);
+                        $.unblockUI()
+                        $("#resultBox").css('opacity', '0.7');
+                        $("#resultBox").text(rtn);
                     },
                     error: function() {
+                        $.unblockUI()
                         alert("결과 조회 실패 ㅠㅠ");
                     },
                     cache: false,
