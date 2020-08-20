@@ -1,8 +1,22 @@
 from flask import Flask, render_template, request
 import requests
-import uuid, time, json, numpy
+import uuid, time, json, numpy, hmac, hashlib, base64
+from datetime import datetime
 from werkzeug.utils import secure_filename
-#임경희 찬양?!
+
+# open api 추가부분
+timeStamp = datetime.today().strftime("%Y%m%d%H%M%S")
+appKey = "l7xxsu3frR8WTl45Mcp0o9BQo2wGW54tyA4H"
+secretKey = "AZvhnwYWU89EnUnEdR8RubyAQGv1CP57"
+
+url = "https://gwapid.hanwhalife.com:8080/ldi/v1/hamldi_if_dev"
+
+app_time = appKey + timeStamp
+
+signiture = hmac.new(secretKey.encode(), app_time.encode(), digestmod=hashlib.sha512).digest()
+hash_value = base64.b64encode(signiture).decode()
+token = appKey + '|' + timeStamp + '|' + hash_value
+# open api 추가부분
 
 URL = "https://31f5f933d64446b2a3e48fb118946790.apigw.ntruss.com/custom/v1/1994/7eb60930f549092a92229c1ae3918daa20b418bfe1bc002d1de7a9146db248f5/infer"
 KEY = "WGdQbVFxb1JkSlR3Vm9kSlpnaXpYU1hnbEhiSHNNZ28="
@@ -47,20 +61,12 @@ def upload_file():
             'X-OCR-SECRET': secret_key
         }
 
-#        response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
         response = requests.post(api_url, data=payload, headers=headers, files=files)
         json_data = response.json()
 
         from collections import OrderedDict
 
         file_data = OrderedDict()
-
-#        file_data[json_data.get("title").get("name")] = json_data.get("title").get("inferText")
-#        jsonArray = json_data.get("fields")
-
-#        for i, item in enumerate(jsonArray):
-#            file_data[item.get("name")] = item.get("inferText")
-
 
         jsonArray = json_data.get("images")
         for i, item in enumerate(jsonArray):
