@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import requests
-import uuid, time, json, numpy, hmac, hashlib, base64
+import uuid, time, json, numpy, hmac, hashlib, base64, random
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
@@ -9,6 +9,11 @@ timeStamp = datetime.today().strftime("%Y%m%d%H%M%S")
 appKey = "l7xxsu3frR8WTl45Mcp0o9BQo2wGW54tyA4H"
 secretKey = "AZvhnwYWU89EnUnEdR8RubyAQGv1CP57"
 
+trnsDldt = datetime.today().strftime("%Y%m%d")
+trnsDlngTime = datetime.today().strftime("%H%M%S")
+rannum = trnsDlngTime[:5]
+
+refno = trnsDlngTime + rannum
 url = "https://gwapid.hanwhalife.com:8080/ldi/v1/hamldi_if_dev"
 
 app_time = appKey + timeStamp
@@ -27,6 +32,9 @@ tmp_file = '.'
 
 app = Flask(__name__)
 # OCR부분
+
+#환율 -> 나중에 실시간 데이터 받던지 하기
+KHWKURS = 1189.1000
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -75,10 +83,87 @@ def upload_file():
             for j, item2 in enumerate(jsonArray2):
                 file_data[item2.get("name")] = item2.get("inferText")
 
-        print(json.dumps(file_data, ensure_ascii=False, indent='\t'))
+        #print(json.dumps(file_data, ensure_ascii=False, indent='\t'))
+
+        yjamtK = round(float(file_data['YJAMT']) * KHWKURS)
+        idxamtK = round(float(file_data['IDXAMT']) * KHWKURS)
+        susuryoK = round(float(file_data['SUSURYO']) * KHWKURS)
+        segumK = round(float(file_data['SEGUM']) * KHWKURS)
+        fiamtK = round(float(file_data['FIAMT']) * KHWKURS)
+        dbestand = str(file_data['DBESTAND']).replace('-','')
+        dzterm = str(file_data['DZTERM']).replace('-','')
+
+        payload = {
+            'key': 'l7784e582f9cfd4af79163d2033951c40f',
+            'callType': 'R',
+            'refid': 'HAMRST030',
+            'refno': refno , #'2020072110065',  # 날짜 변경
+            'funcNm': '',
+            'trnsDldt': str(trnsDldt),#'20200721',
+            'trnsDlngTime': str(trnsDlngTime), #'175357',
+            'procGb': 'C',
+            'rfha': '',
+            'ranl': '0000100002291',
+            'rldepo': 'AZ0015S101',
+            'sfhaart': '100',
+            'sfhazba': '0100',
+            'dbestand': dbestand, #'20200805',
+            'wgschft': str(file_data['WGSCHFT']),
+            'khwkurs': str(KHWKURS),#'1189.1000',  # 환율
+            'setlType': '06',
+            'dzterm': dzterm, #'20200807',
+            'yjqty': str(file_data['YJGTY']),#'1330.0000',  # 금융상품 단위수 - 주수
+            'yjamt': str(file_data['YJAMT']),#'4163133.15',  # 약정금액(외화)
+            'idxamt': str(file_data['IDXAMT']),#'31301753.01',  # 약정단가 (외화)
+            'susuryo': str(file_data['SUSURYO']),#'1665.25',  # 수수료(외화)
+            'segum': str(file_data['SEGUM']),#'0',  # 세금 (외화)
+            'fiamt': str(file_data['FIAMT']),#'4164798.40',  # 정산금액(외화)
+            'yjamtK': str(yjamtK) , #'4950381628',  # 약정금액(원화)
+            'idxamtK': str(idxamtK) ,#'3722091',  # 약정단가(원화)
+            'susuryoK': str(susuryoK), #'1980148',  # 수수료(원화)
+            'segumK': str(segumK),#'0',  # 세금(원화)
+            'fiamtK': str(fiamtK),#'4952361776',  # 정산금액(원화)
+            'appmStAmt': '0',
+            'appmAddAmt': '0',
+            'rportb': 'A0000',
+            'accountGroup': 'AZ0015',
+            'valuationClass1039': '0005',
+            'operPart': '00377',
+            'manager': '190006A',
+            'taxPayType': '01',
+            'lastTr': 'N',
+            'kontrh': '9051496379',
+            'hbkid': 'JPMLO',
+            'hktid': 'USD01',
+            'sglzb': '1010',
+            'trustAccountNum': '',
+            'accNo': '',
+            'accPttn': '01',
+            'hybridYn': 'N',
+            'sharDebtDvsn': '01',
+            'valuationClass1109': '0002',
+            'fvociAsmtYn': '02',
+            'bsnsId': '',
+            'agreId': '',
+            'localCurr': 'KRW'
+        }
+
+        payloadJson = json.dumps(payload).encode('UTF-8')
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+            'Authorization': token,
+            'HLI-Authorization': token,
+            'cryp_dv_cd': '0'
+        }
+        response = requests.request("POST", url, headers=headers, data=payloadJson)
+        print(response.text)
+
+       # with open('words.json', 'w', encoding="utf-8") as make_file:
+       #     json.dump(file_data, make_file, ensure_ascii=False, indent="\t")
 
         with open('words.json', 'w', encoding="utf-8") as make_file:
-            json.dump(file_data, make_file, ensure_ascii=False, indent="\t")
+            json.dump(response, make_file, ensure_ascii=False, indent="\t")
 
         return '파일 업로드 성공!!!'
         # return 'upload 디렉토리 -> 파일 업로드 성공!'
