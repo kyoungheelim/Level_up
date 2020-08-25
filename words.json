@@ -1,0 +1,12 @@
+{
+  "dataHeader" : {
+    "NTPR_CODE":"",
+    "SRVC_ID":"",
+    "ANSW_CODE":"1"
+  },
+  "dataBody" : {
+    "ERR_CODE":"OA04",
+    "ERR_MSG":"허용되지 않는 IP접근 입니다.",
+    "CUST_NOTC_MSG":""
+  }
+}
