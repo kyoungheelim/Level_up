@@ -83,13 +83,13 @@ def upload_file():
             for j, item2 in enumerate(jsonArray2):
                 file_data[item2.get("name")] = item2.get("inferText")
 
-        #print(json.dumps(file_data, ensure_ascii=False, indent='\t'))
+        print(json.dumps(file_data, ensure_ascii=False, indent='\t'))
 
-        yjamtK = round(float(file_data['YJAMT']) * KHWKURS)
-        idxamtK = round(float(file_data['IDXAMT']) * KHWKURS)
-        susuryoK = round(float(file_data['SUSURYO']) * KHWKURS)
-        segumK = round(float(file_data['SEGUM']) * KHWKURS)
-        fiamtK = round(float(file_data['FIAMT']) * KHWKURS)
+        yjamtK = round(float(str(file_data['YJAMT']).replace(',','')) * KHWKURS)
+        idxamtK = round(float(str(file_data['IDXAMT']).replace(',','')) * KHWKURS)
+        susuryoK = round(float(str(file_data['SUSURYO']).replace(',','')) * KHWKURS)
+        segumK = round(float(str(file_data['SEGUM']).replace(',','')) * KHWKURS)
+        fiamtK = round(float(str(file_data['FIAMT']).replace(',','')) * KHWKURS)
         dbestand = str(file_data['DBESTAND']).replace('-','')
         dzterm = str(file_data['DZTERM']).replace('-','')
 
@@ -112,7 +112,7 @@ def upload_file():
             'khwkurs': str(KHWKURS),#'1189.1000',  # 환율
             'setlType': '06',
             'dzterm': dzterm, #'20200807',
-            'yjqty': str(file_data['YJGTY']),#'1330.0000',  # 금융상품 단위수 - 주수
+            'yjqty': str(file_data['YJQTY']),#'1330.0000',  # 금융상품 단위수 - 주수
             'yjamt': str(file_data['YJAMT']),#'4163133.15',  # 약정금액(외화)
             'idxamt': str(file_data['IDXAMT']),#'31301753.01',  # 약정단가 (외화)
             'susuryo': str(file_data['SUSURYO']),#'1665.25',  # 수수료(외화)
@@ -162,8 +162,9 @@ def upload_file():
        # with open('words.json', 'w', encoding="utf-8") as make_file:
        #     json.dump(file_data, make_file, ensure_ascii=False, indent="\t")
 
-        with open('words.json', 'w', encoding="utf-8") as make_file:
-            json.dump(response, make_file, ensure_ascii=False, indent="\t")
+        open('words.json', 'w', encoding="utf-8").write(response.text)
+        #with open('words.json', 'w', encoding="utf-8") as make_file:
+            #json.dump(response, make_file, ensure_ascii=False, indent="\t")
 
         return '파일 업로드 성공!!!'
         # return 'upload 디렉토리 -> 파일 업로드 성공!'
