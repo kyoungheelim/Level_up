@@ -89,7 +89,7 @@ def upload_file():
         idxamtK = round(float(str(file_data['IDXAMT']).replace(',','')) * KHWKURS)
         susuryoK = round(float(str(file_data['SUSURYO']).replace(',','')) * KHWKURS)
         segumK = round(float(str(file_data['SEGUM']).replace(',','')) * KHWKURS)
-        fiamtK = round(float(str(file_data['FIAMT']).replace(',','')) * KHWKURS)
+        fiamtK = round(float(str(file_data['FIAMT']).replace(',','').replace('-','')) * KHWKURS)
         dbestand = str(file_data['DBESTAND']).replace('-','')
         dzterm = str(file_data['DZTERM']).replace('-','')
 
