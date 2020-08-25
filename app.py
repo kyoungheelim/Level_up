@@ -117,7 +117,7 @@ def upload_file():
             'idxamt': str(file_data['IDXAMT']),#'31301753.01',  # 약정단가 (외화)
             'susuryo': str(file_data['SUSURYO']).replace(',',''),#'1665.25',  # 수수료(외화)
             'segum': str(file_data['SEGUM']),#'0',  # 세금 (외화)
-            'fiamt': str(file_data['FIAMT']).replace(",-",''),#'4164798.40',  # 정산금액(외화)
+            'fiamt': str(file_data['FIAMT']).replace(',','').replace('-',''),#'4164798.40',  # 정산금액(외화)
             'yjamtK': str(yjamtK) , #'4950381628',  # 약정금액(원화)
             'idxamtK': str(idxamtK) ,#'3722091',  # 약정단가(원화)
             'susuryoK': str(susuryoK), #'1980148',  # 수수료(원화)
