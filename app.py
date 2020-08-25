@@ -13,7 +13,7 @@ trnsDldt = datetime.today().strftime("%Y%m%d")
 trnsDlngTime = datetime.today().strftime("%H%M%S")
 rannum = trnsDlngTime[:5]
 
-refno = trnsDlngTime + rannum
+refno = trnsDldt + rannum
 url = "https://gwapid.hanwhalife.com:8080/ldi/v1/hamldi_if_dev"
 
 app_time = appKey + timeStamp
