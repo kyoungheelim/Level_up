@@ -96,7 +96,7 @@ def upload_file():
         payload = {
             'key': 'l7784e582f9cfd4af79163d2033951c40f',
             'callType': 'R',
-            'refid': 'HAMRST030',
+            'refid': 'HAMRST020',
             'refno': refno , #'2020072110065',  # 날짜 변경
             'funcNm': '',
             'trnsDldt': str(trnsDldt),#'20200721',
