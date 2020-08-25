@@ -149,6 +149,7 @@ def upload_file():
         }
 
         payloadJson = json.dumps(payload).encode('UTF-8')
+        print(payloadJson)
         headers = {
             'Content-Type': 'application/json; charset=utf-8',
             'Accept': 'application/json',
