@@ -4,6 +4,10 @@ import uuid, time, json, numpy, hmac, hashlib, base64, random
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
+### pip3 install flask-mysqldb
+from flask_mysqldb import MySQL
+import MySQLdb
+
 # open api 추가부분
 timeStamp = datetime.today().strftime("%Y%m%d%H%M%S")
 appKey = "l7xxsu3frR8WTl45Mcp0o9BQo2wGW54tyA4H"
@@ -32,6 +36,14 @@ tmp_file = '.'
 
 app = Flask(__name__)
 # OCR부분
+
+# Maria DB 연결
+app.config['MYSQL_HOST'] = '49.50.164.42'
+app.config['MYSQL_USER'] = 'root'
+#app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'level_up'
+app.config['MYSQL_PORT'] = 3306
+mysql = MySQL(app)
 
 #환율 -> 나중에 실시간 데이터 받던지 하기
 KHWKURS = 1189.1000
@@ -174,6 +186,28 @@ def upload_file():
 @app.route('/result', methods=['POST'])
 def result():
     return open('words.json', 'r', encoding="utf-8").read()
+
+
+@app.route('/dbTest', methods=['GET'])
+def db_test():
+    # Maria DB Test
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT '##### Maria DB Connection Test SUCCESS!! #####' AS msg")
+    temp_msg = cursor.fetchone()
+    if temp_msg:
+        msg = temp_msg['msg'] + "<br>\n"
+        msg += "host: " + str(app.config.get('MYSQL_HOST')) + "<br>\n"
+        msg += "port: " + str(app.config.get('MYSQL_PORT')) + "<br>\n"
+        msg += "db: " + str(app.config.get('MYSQL_DB')) + "<br>\n"
+        cursor.execute("SELECT version() AS ver")
+        temp_msg = cursor.fetchone()
+        msg += "version: " + temp_msg['ver'] + "<br>\n"
+        cursor.execute("SELECT user FROM mysql.user WHERE host='%'")
+        temp_msg = cursor.fetchone()
+        msg += "user: " + temp_msg['User']
+    else:
+        msg = "##### DB Connection Error!! #####"
+    return msg
 
 
 if __name__ == '__main__':
