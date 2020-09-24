@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, _app_ctx_stack
 import requests
 import uuid, time, json, numpy, hmac, hashlib, base64, random
+import sqlite3
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
@@ -15,7 +16,8 @@ secretKey = "AZvhnwYWU89EnUnEdR8RubyAQGv1CP57"
 
 trnsDldt = datetime.today().strftime("%Y%m%d")
 trnsDlngTime = datetime.today().strftime("%H%M%S")
-rannum = trnsDlngTime[:5]
+#rannum = trnsDlngTime[:5]
+rannum = '00001'
 
 refno = trnsDldt + rannum
 url = "https://gwapid.hanwhalife.com:8080/ldi/v1/hamldi_if_dev"
@@ -47,6 +49,9 @@ mysql = MySQL(app)
 
 #환율 -> 나중에 실시간 데이터 받던지 하기
 KHWKURS = 1189.1000
+
+# DATABASE: SQLite3
+DATABASE = './database.db'
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -186,6 +191,18 @@ def upload_file():
 @app.route('/result', methods=['POST'])
 def result():
     return open('words.json', 'r', encoding="utf-8").read()
+
+def get_db():
+    top = _app_ctx_stack.top
+    if not hasattr(top, 'sqlite_db'):
+        top.sqlite_db = sqlite3.connect(DATABASE)
+    return top.sqlite_db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    top = _app_ctx_stack.top
+    if hasattr(top, 'sqlite_db'):
+        top.sqlite_db.close()
 
 
 @app.route('/dbTest', methods=['GET'])
