@@ -20,7 +20,7 @@ for message in messages:
     if message.Unread==True:
         print(message.body)
         for att in message.Attachments:
-            message.Display(True)
+
             att.SaveAsFile('C:\\Users\\user\\Desktop\\level_up' + '\\' + str(att))
             driver=webdriver.Chrome('C:\\Users\\user\\Desktop\\untitle\\chromedriver.exe')
             driver.get('http://49.50.164.42:5000/upload')
